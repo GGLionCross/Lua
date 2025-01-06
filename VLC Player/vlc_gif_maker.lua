@@ -34,6 +34,21 @@ local function open_log()
     local command = 'start "" "' .. log_file_path .. '"'
     os.execute(command)
 end
+
+local function open_gif_output()
+    local output_path = output_path_input:get_text()
+    local command
+
+    if vlc.win then
+        command = 'explorer "' .. output_path .. '"'
+    elseif vlc.osx then
+        command = 'open "' .. output_path .. '"'
+    else
+        command = 'xdg-open "' .. output_path .. '"'
+    end
+    
+    os.execute(command)
+end
 -- ** CUSTOM DEBUG TOOLS START ** --
 
 function string_replace(target, substring, replacement, n)
@@ -118,6 +133,8 @@ function gui_create_main_dialog(command, output_path)
 
     dlg:add_label("GIFs output path:", 1, 3)
     output_path_input = dlg:add_text_input(output_path, 1, 4, 3)
+
+    dlg:add_button("GIF Output", open_gif_output, 3, 3)
 
     dlg:add_label("Filename (leave empty to randomly generate):", 1, 5)
     output_filename_input = dlg:add_text_input('', 1, 6, 3)
