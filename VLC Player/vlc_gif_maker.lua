@@ -35,6 +35,21 @@ local function open_log()
     os.execute(command)
 end
 
+local function open_config_dir()
+    local config_dir = vlc.config.configdir()
+    local command
+
+    if vlc.win then
+        command = 'explorer "' .. config_dir .. '"'
+    elseif vlc.osx then
+        command = 'open "' .. config_dir .. '"'
+    else
+        command = 'xdg-open "' .. config_dir .. '"'
+    end
+    
+    os.execute(command)
+end
+
 local function open_gif_output()
     local output_path = output_path_input:get_text()
     local command
@@ -162,6 +177,8 @@ function gui_create_main_dialog(command, output_path)
     looping_input:add_value("Loop GIF", 0)
     looping_input:add_value("Only play once", -1)
 
+    dlg:add_button("Configs", open_config_dir, 7, 5)
+
     dlg:add_label("Speed", 5, 6, 1)
     speed = dlg:add_text_input("1.0", 5, 7, 1)
 
@@ -267,7 +284,7 @@ end
 function check_ffmpeg_status()
     status_code = os.execute("ffmpeg -version")
     if status_code then
-        startExtension(command, output_path)
+        startExtension()
     else 
         gui_create_ffmpeg_warning()
     end
@@ -276,8 +293,7 @@ end
 function startExtension()
     if ffmpegDlg then 
         ffmpegDlg:delete()
-        ffmpegDlg = nil 
-        startExtension()
+        ffmpegDlg = nil
     end
     gui_create_main_dialog(command, output_path)
 end
